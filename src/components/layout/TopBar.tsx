@@ -87,7 +87,7 @@ function OfficeTopBarContent({
           OpenClaw Office
         </h1>
         <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-500 dark:bg-gray-800 dark:text-gray-400">
-          v0.1.0
+          v{__APP_VERSION__}
         </span>
       </div>
       <ViewModeSwitch

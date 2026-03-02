@@ -31,6 +31,10 @@
 
 ![office-3D](./assets/office-3d.png)
 
+#### 演示视频
+
+https://github.com/WW-AI-Lab/openclaw-office/raw/main/assets/iShot_2026-03-02_21.33.38.mp4
+
 ### 控制台
 
 完整的系统管理界面：

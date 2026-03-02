@@ -95,7 +95,8 @@ export class WsAdapter implements GatewayAdapter {
   }
 
   async sessionsList(): Promise<SessionInfo[]> {
-    return this.rpcClient.request<SessionInfo[]>("sessions.list");
+    const result = await this.rpcClient.request<{ sessions?: SessionInfo[] }>("sessions.list");
+    return Array.isArray(result) ? result : (result?.sessions ?? []);
   }
 
   async sessionsPreview(sessionKey: string): Promise<SessionPreview> {

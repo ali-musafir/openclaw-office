@@ -180,8 +180,8 @@ export const useChatDockStore = create<ChatDockState>((set, get) => ({
   loadSessions: async () => {
     try {
       const adapter = getAdapter();
-      const sessions = await adapter.sessionsList();
-      set({ sessions });
+      const result = await adapter.sessionsList();
+      set({ sessions: Array.isArray(result) ? result : [] });
     } catch {
       // Silently handle — sessions not critical
     }

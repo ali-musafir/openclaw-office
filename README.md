@@ -31,6 +31,10 @@
 
 ![office-3D](./assets/office-3d.png)
 
+#### Demo Video
+
+https://github.com/WW-AI-Lab/openclaw-office/raw/main/assets/iShot_2026-03-02_21.33.38.mp4
+
 ### Console
 
 Full system management interface with dedicated pages:
