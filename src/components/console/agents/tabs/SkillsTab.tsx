@@ -1,5 +1,5 @@
-import { RefreshCw, Loader2, AlertTriangle, Sparkles } from "lucide-react";
-import { useState, useEffect, useCallback } from "react";
+import { RefreshCw, Loader2, AlertTriangle, Sparkles, CheckSquare, Square } from "lucide-react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { SkillInfo } from "@/gateway/adapter-types";
 import type { AgentSummary } from "@/gateway/types";
@@ -60,22 +60,58 @@ export function SkillsTab({ agent }: SkillsTabProps) {
     );
   };
 
+  const skills = agentSkills ?? [];
+  const selectableSkills = useMemo(
+    () => skills.filter((s) => !isSkillLocked(s)),
+    [skills],
+  );
+
+  const handleSelectAll = () => {
+    setLocalAllowlist(skills.map((s) => s.slug));
+  };
+
+  const handleDeselectAll = () => {
+    const lockedSlugs = skills.filter((s) => isSkillLocked(s)).map((s) => s.slug);
+    setLocalAllowlist(lockedSlugs);
+  };
+
   const handleSave = useCallback(async () => {
     setSaving(true);
     setSaveStatus("idle");
-    const ok = await saveAgentSkillsAllowlist(
+    const result = await saveAgentSkillsAllowlist(
       agent.id,
       mode === "all" ? null : localAllowlist,
     );
     setSaving(false);
-    setSaveStatus(ok ? "success" : "error");
-    if (ok) setTimeout(() => setSaveStatus("idle"), 2000);
+    setSaveStatus(result.ok ? "success" : "error");
+    if (result.ok) {
+      setTimeout(() => setSaveStatus("idle"), 2000);
+    }
   }, [agent.id, mode, localAllowlist, saveAgentSkillsAllowlist]);
 
-  const skills = agentSkills ?? [];
-  const totalCount = skills.length;
-  const enabledCount = skills.filter((s) => s.enabled).length;
-  const blockedCount = skills.filter((s) => s.blockedByAllowlist).length;
+  // Compute stats based on local edit state, not just remote data
+  const { totalCount, enabledCount, blockedCount } = useMemo(() => {
+    const total = skills.length;
+    if (mode === "all") {
+      return {
+        totalCount: total,
+        enabledCount: skills.filter((s) => s.enabled).length,
+        blockedCount: skills.filter((s) => s.blockedByAllowlist).length,
+      };
+    }
+    const allowSet = new Set(localAllowlist);
+    const enabled = skills.filter((s) =>
+      isSkillLocked(s) || allowSet.has(s.slug),
+    ).length;
+    return {
+      totalCount: total,
+      enabledCount: enabled,
+      blockedCount: total - enabled,
+    };
+  }, [skills, mode, localAllowlist]);
+
+  const allSelected = mode === "selected" && selectableSkills.every((s) => localAllowlist.includes(s.slug));
+  const noneSelected = mode === "selected" && selectableSkills.every((s) => !localAllowlist.includes(s.slug));
 
   if (agentSkillsLoading) {
     return (
@@ -99,8 +135,7 @@ export function SkillsTab({ agent }: SkillsTabProps) {
           <RefreshCw className="h-4 w-4" />
         </button>
       </div>
-
-      {/* Statistics summary */}
+      {/* Statistics summary — reflects local edit state */}
       <div className="flex gap-4">
         <StatBadge label={t("agents.skills.total")} value={totalCount} />
         <StatBadge label={t("agents.skills.enabled")} value={enabledCount} color="green" />
@@ -136,6 +171,28 @@ export function SkillsTab({ agent }: SkillsTabProps) {
           </label>
         </div>
       </div>
+
+      {/* Select all / Deselect all buttons */}
+      {mode === "selected" && skills.length > 0 && (
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleSelectAll}
+            disabled={allSelected}
+            className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-40 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700"
+          >
+            <CheckSquare className="h-3.5 w-3.5" />
+            {t("agents.skills.selectAll")}
+          </button>
+          <button
+            onClick={handleDeselectAll}
+            disabled={noneSelected}
+            className="inline-flex items-center gap-1.5 rounded-md border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-40 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700"
+          >
+            <Square className="h-3.5 w-3.5" />
+            {t("agents.skills.deselectAll")}
+          </button>
+        </div>
+      )}
 
       {/* Skill list */}
       <div className="space-y-1">
@@ -237,6 +294,18 @@ function SkillRow({
     ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
     : "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400";
 
+  const statusLabel = selectable
+    ? (checked ? t("skills.detail.enabled") : t("skills.detail.disabled"))
+    : (skill.enabled ? t("skills.detail.enabled") : t("skills.detail.disabled"));
+
+  const statusBadge = selectable
+    ? (checked
+        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+        : "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400")
+    : (skill.enabled
+        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+        : "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400");
+
   return (
     <div className="flex items-center gap-3 rounded-md px-3 py-2.5 hover:bg-gray-50 dark:hover:bg-gray-800/50">
       {selectable && (
@@ -253,15 +322,9 @@ function SkillRow({
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium text-gray-900 dark:text-gray-100">{skill.name}</span>
-          {skill.enabled ? (
-            <span className="rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">
-              {t("skills.detail.enabled")}
-            </span>
-          ) : (
-            <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 dark:bg-gray-700 dark:text-gray-400">
-              {t("skills.detail.disabled")}
-            </span>
-          )}
+          <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${statusBadge}`}>
+            {statusLabel}
+          </span>
           <span className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${sourceBadgeColor}`}>
             {sourceLabel}
           </span>

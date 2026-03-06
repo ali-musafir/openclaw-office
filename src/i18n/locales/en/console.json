@@ -224,6 +224,22 @@
     "reconnecting": "Reconnecting...",
     "complete": "Gateway is back online"
   },
+  "configLifecycle": {
+    "effectiveNow": "Changes are active now.",
+    "savedHotReload": "Configuration saved. Gateway will apply its built-in reload handling automatically.",
+    "savedRestartRequired": "Configuration saved. Some changes require a Gateway restart to be fully applied.",
+    "savedCliRestartRequired": "Configuration saved. Run the command below to restart Gateway and apply the changes.",
+    "applyRestarting": "Configuration saved. Gateway will restart in {{seconds}}s.",
+    "disconnected": "Gateway disconnected while restart is in progress.",
+    "reconnecting": "Reconnecting to Gateway.",
+    "complete": "Gateway is back online and the latest configuration is active.",
+    "copyCommand": "Copy command",
+    "copiedCommand": "Copied",
+    "runtimeAgentModel": "Default model updated. New requests use the new model; current runs keep their existing model.",
+    "runtimeAgentModelSessionsReset": "Default model updated. Existing external channel sessions were cleared, so the next message on Feishu and similar channels will rebuild the session with the new model.",
+    "runtimeSkill": "Skill configuration updated and active immediately.",
+    "runtimeCron": "Scheduled task changes are active immediately."
+  },
   "cron": {
     "title": "Cron Tasks",
     "description": "Manage cron tasks: create, edit, enable/disable, run immediately",
@@ -305,17 +321,19 @@
         "providerIdHint": "Unique identifier in the config file",
         "baseUrl": "Base URL",
         "apiKey": "API Key",
-        "apiType": "API Type",
-        "idConflict": "This Provider ID already exists",
-        "cancel": "Cancel",
-        "save": "Save"
-      },
-      "editDialog": {
-        "title": "Edit Provider",
-        "apiKeyPlaceholder": "Leave empty to keep unchanged",
-        "cancel": "Cancel",
-        "save": "Save"
-      },
+      "apiType": "API Type",
+      "idConflict": "This Provider ID already exists",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saveAndRestart": "Save and Restart"
+    },
+    "editDialog": {
+      "title": "Edit Provider",
+      "apiKeyPlaceholder": "Leave empty to keep unchanged",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saveAndRestart": "Save and Restart"
+    },
       "models": {
         "title": "Models",
         "add": "Add Model",
@@ -474,6 +492,7 @@
       "saving": "Saving...",
       "saveSuccess": "Saved successfully",
       "saveError": "Failed to save",
+      "runtimeHint": "Only affects new requests; in-progress runs keep their current model.",
       "deleteAgent": "Delete Agent",
       "cannotDeleteDefault": "Cannot delete default agent"
     },
@@ -539,11 +558,19 @@
       "missingDeps": "Missing dependencies",
       "sourceBuiltIn": "Built-in",
       "sourceMarketplace": "Marketplace",
+      "selectAll": "Select All",
+      "deselectAll": "Deselect All",
       "save": "Save",
       "saving": "Saving...",
       "saveSuccess": "Saved successfully",
       "saveError": "Save failed",
       "refresh": "Refresh"
+    },
+    "restart": {
+      "required": "Configuration saved. A Gateway restart is required for changes to take effect.",
+      "restartNow": "Restart Now",
+      "restarting": "Restarting...",
+      "done": "Gateway restarted. Configuration is now active."
     },
     "channels": {
       "title": "Channel Status",

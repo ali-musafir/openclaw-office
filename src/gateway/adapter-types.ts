@@ -316,6 +316,18 @@ export interface ConfigPatchResult {
   error?: string;
 }
 
+export interface ConfigWriteResult {
+  ok: boolean;
+  path?: string;
+  config: Record<string, unknown>;
+  restart?: {
+    scheduled: boolean;
+    delayMs: number;
+    coalesced?: boolean;
+  };
+  error?: string;
+}
+
 export interface ConfigUiHint {
   label?: string;
   help?: string;

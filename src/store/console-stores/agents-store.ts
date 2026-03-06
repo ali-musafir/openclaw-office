@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { getAdapter, waitForAdapter } from "@/gateway/adapter-provider";
+import { useConfigStore } from "@/store/console-stores/config-store";
 import type {
   AgentCreateParams,
   AgentFileInfo,
@@ -15,7 +16,9 @@ import {
   extractAgentConfig,
   patchAgentToolsConfig,
   patchAgentSkillsConfig,
+  type PatchResult,
 } from "@/lib/config-patch-helpers";
+import { clearAgentChannelSessions } from "./agent-session-cleanup";
 
 export type AgentTab = "overview" | "files" | "tools" | "skills" | "channels" | "cronJobs";
 
@@ -96,11 +99,11 @@ interface AgentsStoreState {
 
   // Tools tab actions
   fetchAgentTools: (agentId: string) => Promise<void>;
-  saveAgentToolsConfig: (agentId: string, toolsConfig: AgentToolsConfig) => Promise<boolean>;
+  saveAgentToolsConfig: (agentId: string, toolsConfig: AgentToolsConfig) => Promise<PatchResult>;
 
   // Skills tab actions
   fetchAgentSkills: (agentId: string) => Promise<void>;
-  saveAgentSkillsAllowlist: (agentId: string, skills: string[] | null) => Promise<boolean>;
+  saveAgentSkillsAllowlist: (agentId: string, skills: string[] | null) => Promise<PatchResult>;
 
   // Channels tab actions
   fetchAgentChannels: () => Promise<void>;
@@ -336,7 +339,20 @@ export const useAgentsStore = create<AgentsStoreState>((set, get) => ({
   updateAgentModel: async (agentId, model) => {
     try {
       await waitForAdapter();
-      const result = await getAdapter().agentsUpdate({ agentId, model });
+      const adapter = getAdapter();
+      const result = await adapter.agentsUpdate({ agentId, model });
+      if (result.ok) {
+        let messageKey = "configLifecycle.runtimeAgentModel";
+        try {
+          const cleared = await clearAgentChannelSessions(adapter, agentId);
+          if (cleared > 0) {
+            messageKey = "configLifecycle.runtimeAgentModelSessionsReset";
+          }
+        } catch {
+          // Keep the runtime-applied success state even if session cleanup fails.
+        }
+        useConfigStore.getState().setRuntimeApplied(messageKey);
+      }
       return result.ok;
     } catch {
       return false;
@@ -397,11 +413,16 @@ export const useAgentsStore = create<AgentsStoreState>((set, get) => ({
         configHash ?? undefined,
       );
       if (result.ok) {
-        set({ agentToolsConfig: toolsConfig, configHash: result.newHash ?? null });
+        const snapshot = await adapter.configGet();
+        set({ agentToolsConfig: toolsConfig, configHash: snapshot.hash ?? null });
+        useConfigStore.getState().setLifecycleFromWriteResult(
+          { ...result, config: snapshot.config },
+          "save",
+        );
       }
-      return result.ok;
+      return result;
     } catch {
-      return false;
+      return { ok: false, error: "unknown" };
     }
   },
 
@@ -441,11 +462,16 @@ export const useAgentsStore = create<AgentsStoreState>((set, get) => ({
         configHash ?? undefined,
       );
       if (result.ok) {
-        set({ agentSkillsAllowlist: skills, configHash: result.newHash ?? null });
+        const snapshot = await adapter.configGet();
+        set({ agentSkillsAllowlist: skills, configHash: snapshot.hash ?? null });
+        useConfigStore.getState().setLifecycleFromWriteResult(
+          { ...result, config: snapshot.config },
+          "save",
+        );
       }
-      return result.ok;
+      return result;
     } catch {
-      return false;
+      return { ok: false, error: "unknown" };
     }
   },
 
@@ -482,6 +508,7 @@ export const useAgentsStore = create<AgentsStoreState>((set, get) => ({
     await waitForAdapter();
     const task = await getAdapter().cronAdd({ ...input, agentId });
     set((s) => ({ agentCronJobs: [...s.agentCronJobs, task] }));
+    useConfigStore.getState().setRuntimeApplied("configLifecycle.runtimeCron");
   },
 
   updateAgentCronJob: async (id, patch) => {
@@ -490,17 +517,20 @@ export const useAgentsStore = create<AgentsStoreState>((set, get) => ({
     set((s) => ({
       agentCronJobs: s.agentCronJobs.map((j) => (j.id === id ? updated : j)),
     }));
+    useConfigStore.getState().setRuntimeApplied("configLifecycle.runtimeCron");
   },
 
   removeAgentCronJob: async (id) => {
     await waitForAdapter();
     await getAdapter().cronRemove(id);
     set((s) => ({ agentCronJobs: s.agentCronJobs.filter((j) => j.id !== id) }));
+    useConfigStore.getState().setRuntimeApplied("configLifecycle.runtimeCron");
   },
 
   runAgentCronJob: async (id) => {
     await waitForAdapter();
     await getAdapter().cronRun(id);
+    useConfigStore.getState().setRuntimeApplied("configLifecycle.runtimeCron");
   },
 
   toggleAgentCronJob: async (id, enabled) => {
@@ -509,6 +539,7 @@ export const useAgentsStore = create<AgentsStoreState>((set, get) => ({
     set((s) => ({
       agentCronJobs: s.agentCronJobs.map((j) => (j.id === id ? updated : j)),
     }));
+    useConfigStore.getState().setRuntimeApplied("configLifecycle.runtimeCron");
   },
 
   openAgentCronDialog: (task) => {

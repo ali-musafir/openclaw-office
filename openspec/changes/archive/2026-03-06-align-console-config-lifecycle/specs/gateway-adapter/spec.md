@@ -1,9 +1,5 @@
-# gateway-adapter Specification
+## MODIFIED Requirements
 
-## Purpose
-
-TBD - created by archiving change clawx-phase-a-architecture. Update Purpose after archive.
-## Requirements
 ### Requirement: GatewayAdapter 统一接口
 
 系统 SHALL 定义 `GatewayAdapter` TypeScript 接口，包含与 OpenClaw Gateway 方法一一对应的类型安全方法签名，并覆盖控制台配置生命周期所需的原生 Gateway 能力。
@@ -24,20 +20,6 @@ TBD - created by archiving change clawx-phase-a-architecture. Update Purpose aft
 - **THEN** `configSet()` 与 `configApply()` SHALL 作为语义不同的独立方法暴露
 - **THEN** 调用方 SHALL 能区分“仅保存”和“保存并重启”两种行为
 
-### Requirement: MockAdapter 实现
-
-系统 SHALL 提供 `MockAdapter` 类，实现 `GatewayAdapter` 接口，返回模拟数据用于离线开发。
-
-#### Scenario: MockAdapter 支持 save/apply 生命周期模拟
-
-- **WHEN** 调用 MockAdapter 的 `configSet()`
-- **THEN** SHALL 返回“保存成功且未强制安排重启”的模拟结果
-
-#### Scenario: MockAdapter 支持 apply 生命周期模拟
-
-- **WHEN** 调用 MockAdapter 的 `configApply()`
-- **THEN** SHALL 返回“保存成功且已安排重启”的模拟结果
-
 ### Requirement: WsAdapter 实现
 
 系统 SHALL 提供 `WsAdapter` 类，实现 `GatewayAdapter` 接口，通过现有 WebSocket 客户端与真实 Gateway 通信。
@@ -54,17 +36,16 @@ TBD - created by archiving change clawx-phase-a-architecture. Update Purpose aft
 - **THEN** SHALL 内部调用 Gateway RPC `config.apply`
 - **THEN** SHALL 支持透传 `sessionKey`、`note`、`restartDelayMs` 等原生参数
 
-### Requirement: Adapter Provider 切换
+### Requirement: MockAdapter 实现
 
-系统 SHALL 根据环境变量自动选择 Adapter 实现。
+系统 SHALL 提供 `MockAdapter` 类，实现 `GatewayAdapter` 接口，返回模拟数据用于离线开发。
 
-#### Scenario: VITE_MOCK=true 时使用 MockAdapter
+#### Scenario: MockAdapter 支持 save/apply 生命周期模拟
 
-- **WHEN** 环境变量 `VITE_MOCK` 设为 `"true"`
-- **THEN** `getAdapter()` SHALL 返回 MockAdapter 实例
+- **WHEN** 调用 MockAdapter 的 `configSet()`
+- **THEN** SHALL 返回“保存成功且未强制安排重启”的模拟结果
 
-#### Scenario: 默认使用 WsAdapter
+#### Scenario: MockAdapter 支持 apply 生命周期模拟
 
-- **WHEN** 环境变量 `VITE_MOCK` 未设置或为 `"false"`
-- **THEN** `getAdapter()` SHALL 返回 WsAdapter 实例
-
+- **WHEN** 调用 MockAdapter 的 `configApply()`
+- **THEN** SHALL 返回“保存成功且已安排重启”的模拟结果

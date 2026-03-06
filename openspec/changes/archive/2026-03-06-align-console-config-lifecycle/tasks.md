@@ -1,0 +1,10 @@
+- [x] Audit and classify all console-side configuration mutation entry points into `runtime`, `save`, `apply`, or `save_then_cli_restart_hint`, and document the mapping in implementation notes.
+- [x] Extend the adapter contract and adapter implementations to support `config.set` and `config.apply`, while keeping mock mode behavior aligned with the new lifecycle states.
+- [x] Introduce a shared configuration lifecycle state model in the relevant store layer, including success, hot-reload, restart-required, and CLI-fallback outcomes.
+- [x] Replace Settings provider management mutations from `config.patch` to the new shared config save/apply flow, preserving optimistic refresh and conflict handling.
+- [x] Replace Agent Tools and Agent Skills allowlist mutations from `config.patch` to the new shared config save/apply flow, and remove any `update.run`-based pseudo-restart behavior.
+- [x] Keep Agent model, Skills runtime config, and Cron management on their existing runtime RPC paths, and add explicit UX copy for when changes affect only new runs.
+- [x] Add a shared UI feedback component for lifecycle outcomes, including reconnecting state and CLI restart command presentation when UI-triggered apply is unavailable.
+- [x] Add or update tests covering adapter mappings, store state transitions, and the major page-level flows for save, apply, and CLI fallback behavior.
+- [x] Validate with targeted test commands plus `openspec validate align-console-config-lifecycle --strict`.
+- [x] Verify the final save/runtime/apply flows against a real local OpenClaw Gateway in a browser, including at least one runtime update, one config-save hot-reload path, and one config-apply restart path.

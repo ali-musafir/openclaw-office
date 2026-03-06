@@ -224,6 +224,22 @@
     "reconnecting": "正在重新连接...",
     "complete": "Gateway 已恢复"
   },
+  "configLifecycle": {
+    "effectiveNow": "修改已生效。",
+    "savedHotReload": "配置已保存，Gateway 将按内置重载策略自动生效。",
+    "savedRestartRequired": "配置已保存，部分变更需要重启 Gateway 后才能完全生效。",
+    "savedCliRestartRequired": "配置已保存，请执行下方命令重启 Gateway 后生效。",
+    "applyRestarting": "配置已保存，Gateway 将在 {{seconds}} 秒后重启。",
+    "disconnected": "Gateway 已断开，等待重启恢复。",
+    "reconnecting": "Gateway 正在重新连接。",
+    "complete": "Gateway 已恢复，最新配置已生效。",
+    "copyCommand": "复制命令",
+    "copiedCommand": "已复制",
+    "runtimeAgentModel": "默认模型已更新。新请求会使用新模型，进行中的运行不会切换。",
+    "runtimeAgentModelSessionsReset": "默认模型已更新。已清理该智能体的外部渠道会话缓存，飞书等渠道的下一条消息会以新模型重建会话。",
+    "runtimeSkill": "技能配置已更新，并已立即生效。",
+    "runtimeCron": "定时任务配置已更新，并已立即生效。"
+  },
   "cron": {
     "title": "定时任务",
     "description": "管理定时任务：创建、编辑、启停、立即执行",
@@ -305,17 +321,19 @@
         "providerIdHint": "配置文件中的唯一标识",
         "baseUrl": "基础 URL",
         "apiKey": "API Key",
-        "apiType": "API 类型",
-        "idConflict": "该提供方 ID 已存在",
-        "cancel": "取消",
-        "save": "保存"
-      },
-      "editDialog": {
-        "title": "编辑提供方",
-        "apiKeyPlaceholder": "留空保持不变",
-        "cancel": "取消",
-        "save": "保存"
-      },
+      "apiType": "API 类型",
+      "idConflict": "该提供方 ID 已存在",
+      "cancel": "取消",
+      "save": "保存",
+      "saveAndRestart": "保存并重启"
+    },
+    "editDialog": {
+      "title": "编辑提供方",
+      "apiKeyPlaceholder": "留空保持不变",
+      "cancel": "取消",
+      "save": "保存",
+      "saveAndRestart": "保存并重启"
+    },
       "models": {
         "title": "模型列表",
         "add": "添加模型",
@@ -474,6 +492,7 @@
       "saving": "保存中...",
       "saveSuccess": "保存成功",
       "saveError": "保存失败",
+      "runtimeHint": "仅影响后续新请求；当前正在运行的会话会继续使用已有模型。",
       "deleteAgent": "删除智能体",
       "cannotDeleteDefault": "无法删除默认智能体"
     },
@@ -539,11 +558,19 @@
       "missingDeps": "缺少依赖",
       "sourceBuiltIn": "内置",
       "sourceMarketplace": "市场",
+      "selectAll": "全选",
+      "deselectAll": "全不选",
       "save": "保存",
       "saving": "保存中...",
       "saveSuccess": "保存成功",
       "saveError": "保存失败",
       "refresh": "刷新"
+    },
+    "restart": {
+      "required": "配置已保存，需要重启 Gateway 才能生效。",
+      "restartNow": "立即重启",
+      "restarting": "重启中...",
+      "done": "Gateway 已重启，配置已生效。"
     },
     "channels": {
       "title": "渠道状态",

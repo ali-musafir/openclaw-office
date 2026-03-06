@@ -6,10 +6,10 @@ interface AgentConfigEntry extends Record<string, unknown> {
   skills?: string[];
 }
 
-interface PatchResult {
+export interface PatchResult {
   ok: boolean;
   error?: string;
-  newHash?: string;
+  restart?: { scheduled: boolean; delayMs: number };
 }
 
 export function extractAgentConfig(
@@ -47,14 +47,14 @@ export async function patchAgentToolsConfig(
 
     updatedList[idx] = { ...updatedList[idx], tools: toolsConfig };
 
-    const result = await adapter.configPatch(
+    const result = await adapter.configSet(
       JSON.stringify(updated),
       baseHash ?? snapshot.hash,
     );
     if (!result.ok) {
       return { ok: false, error: result.error ?? "conflict" };
     }
-    return { ok: true };
+    return { ok: true, restart: result.restart ?? undefined };
   } catch (err) {
     return { ok: false, error: String(err) };
   }
@@ -85,14 +85,14 @@ export async function patchAgentSkillsConfig(
       updatedList[idx] = { ...updatedList[idx], skills };
     }
 
-    const result = await adapter.configPatch(
+    const result = await adapter.configSet(
       JSON.stringify(updated),
       baseHash ?? snapshot.hash,
     );
     if (!result.ok) {
       return { ok: false, error: result.error ?? "conflict" };
     }
-    return { ok: true };
+    return { ok: true, restart: result.restart ?? undefined };
   } catch (err) {
     return { ok: false, error: String(err) };
   }

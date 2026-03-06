@@ -45,14 +45,16 @@ export function ToolsTab({ agent }: ToolsTabProps) {
   const handleSave = useCallback(async () => {
     setSaving(true);
     setSaveStatus("idle");
-    const ok = await saveAgentToolsConfig(agent.id, {
+    const result = await saveAgentToolsConfig(agent.id, {
       profile: profile || undefined,
       alsoAllow: alsoAllow.length > 0 ? alsoAllow : undefined,
       deny: deny.length > 0 ? deny : undefined,
     });
     setSaving(false);
-    setSaveStatus(ok ? "success" : "error");
-    if (ok) setTimeout(() => setSaveStatus("idle"), 2000);
+    setSaveStatus(result.ok ? "success" : "error");
+    if (result.ok) {
+      setTimeout(() => setSaveStatus("idle"), 2000);
+    }
   }, [agent.id, profile, alsoAllow, deny, saveAgentToolsConfig]);
 
   const addTag = (list: string[], setList: (v: string[]) => void, value: string) => {
@@ -90,7 +92,6 @@ export function ToolsTab({ agent }: ToolsTabProps) {
           <RefreshCw className="h-4 w-4" />
         </button>
       </div>
-
       {/* Strategy summary card */}
       <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
         <div className="flex items-center gap-4 text-sm">
